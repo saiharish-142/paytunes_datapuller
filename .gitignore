@@ -1,0 +1,9 @@
+dist
+dev.js
+comment.js
+dataPulled.json
+data.json
+Data1.csv
+config.json
+package-lock.json
+node_modules/
