@@ -36,7 +36,7 @@ const tempModel2 = mongoose.model('tempModel2');
 
 app.get('/dataPuller2', async (req, res) => {
 	const { startDate, endDate } = req.body;
-	console.log(startDate, endDate);
+	console.log(startDate, endDate, 'Started');
 	try {
 		let data = await trackinglogs
 			.aggregate([
