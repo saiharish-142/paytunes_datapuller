@@ -34,6 +34,10 @@ async function dataGiver() {
 const trackinglogs = mongoose.model('trackinglogs_29jan22');
 const tempModel2 = mongoose.model('tempModel2');
 
+app.get('/sho', (req, res) => {
+	res.json('super');
+});
+
 app.get('/dataPuller2', async (req, res) => {
 	const { startDate, endDate } = req.body;
 	console.log(startDate, endDate, 'Started');
