@@ -38,9 +38,18 @@ app.get('/sho', (req, res) => {
 	res.json('super');
 });
 
+app.get('/length', async (req, res) => {
+	try {
+		let data = await tempModel2.count();
+		res.json(data);
+	} catch (e) {
+		res.status(422).json(e);
+	}
+});
+
 app.get('/dataPuller2', async (req, res) => {
-	const { startDate, endDate } = req.body;
-	console.log(startDate, endDate, 'Started');
+	// const { startDate, endDate } = req.body;
+	console.log('Started');
 	try {
 		let data = await trackinglogs
 			.aggregate([
