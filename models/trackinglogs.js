@@ -47,6 +47,18 @@ const tempModel2Schema = new mongoose.Schema({
 });
 tempModel2Schema.index({ campaignId: 1, time: 1 });
 
+const tempModel3Schema = new mongoose.Schema({
+	phoneModel: { type: String },
+	phoneMake: { type: String },
+	ibacategory: { type: String },
+	dayOfWeek: { type: String },
+	campaignId: { type: String },
+	impression: { type: Number },
+	click: { type: Number },
+	complete: { type: Number }
+});
+tempModel3Schema.index({ campaignId: 1, dayOfWeek: 1, phoneModel: 1, phoneMake: 1 });
+
 const trackinglogs8oct21Schema = new mongoose.Schema({
 	id: String,
 	appId: { type: String },
@@ -123,3 +135,4 @@ mongoose.model('trackinglogs8oct21', trackinglogs8oct21Schema);
 mongoose.model('trackinglogs_29jan22', trackinglogs29jan22Schema);
 mongoose.model('tempModel1', tempModel1Schema);
 mongoose.model('tempModel2', tempModel2Schema);
+mongoose.model('tempModel3', tempModel3Schema);
