@@ -10,10 +10,12 @@ const data = require('./data.json');
 const options = {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
-	serverSelectionTimeoutMS: 9000000,
-	socketTimeoutMS: 9000000,
+	serverSelectionTimeoutMS: 900000000,
+	socketTimeoutMS: 900000000,
 	useCreateIndex: true,
-	useFindAndModify: false
+	useFindAndModify: false,
+	keepAlive: true,
+	reconnectTries: 10
 };
 
 mongoose.connect(MONGOURI, options);
