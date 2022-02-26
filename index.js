@@ -6,7 +6,7 @@ const cors = require('cors');
 const { MONGOURI } = require('./config/dev');
 const ObjectsToCsv = require('objects-to-csv');
 const data = require('./data.json');
-
+app.use(express.json());
 const options = {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
@@ -200,6 +200,7 @@ app.put('/dataPullerDatewiseDiv', async (req, res) => {
 	const { startDate, endDate } = req.body;
 	// const { startDate, endDate } = req.body;
 	console.log('Started');
+	console.log(startDate, endDate);
 	try {
 		let data = await trackinglogs
 			.aggregate([
