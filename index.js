@@ -198,6 +198,7 @@ app.get('/dataPuller2', async (req, res) => {
 
 app.put('/dataPullerDatewiseDiv', async (req, res) => {
 	const { startDate, endDate } = req.body;
+	// const { startDate, endDate } = req.body;
 	console.log('Started');
 	try {
 		let data = await trackinglogs
