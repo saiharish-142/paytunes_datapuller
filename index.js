@@ -196,4 +196,171 @@ app.get('/dataPuller2', async (req, res) => {
 	}
 });
 
+app.put('/dataPullerDatewiseDiv', async (req, res) => {
+	const { startDate, endDate } = req.body;
+	console.log('Started');
+	try {
+		let data = await trackinglogs
+			.aggregate([
+				{
+					$project: {
+						type: '$type',
+						campaignId: '$campaignId',
+						phoneModel: '$phoneModel',
+						test: { $dateToString: { format: '%Y-%m-%d', date: '$createdOn' } }
+					}
+				},
+				{
+					$match: {
+						test: { $gte: startDate, $lt: endDate },
+						type: {
+							$in: [
+								'impression',
+								'complete',
+								'click',
+								'companionclicktracking',
+								'clicktracking',
+								'firstquartile',
+								'thirdquartile',
+								'midpoint',
+								'start'
+							]
+						}
+					}
+				},
+				{
+					$group: {
+						_id: { phoneModel: '$phoneModel', campaignId: '$campaignId' },
+						start: {
+							$sum: {
+								$cond: [ { $eq: [ '$type', 'start' ] }, 1, 0 ]
+							}
+						},
+						firstquartile: {
+							$sum: {
+								$cond: [ { $eq: [ '$type', 'firstquartile' ] }, 1, 0 ]
+							}
+						},
+						midpoint: {
+							$sum: {
+								$cond: [ { $eq: [ '$type', 'midpoint' ] }, 1, 0 ]
+							}
+						},
+						thirdquartile: {
+							$sum: {
+								$cond: [ { $eq: [ '$type', 'thirdquartile' ] }, 1, 0 ]
+							}
+						},
+						impression: {
+							$sum: {
+								$cond: [ { $eq: [ '$type', 'impression' ] }, 1, 0 ]
+							}
+						},
+						complete: {
+							$sum: {
+								$cond: [ { $eq: [ '$type', 'complete' ] }, 1, 0 ]
+							}
+						},
+						click: {
+							$sum: {
+								$cond: [
+									{ $in: [ '$type', [ 'click', 'companionclicktracking', 'clicktracking' ] ] },
+									1,
+									0
+								]
+							}
+						}
+					}
+				}
+			])
+			.allowDiskUse(true);
+		var num = data.length;
+		console.log(num);
+		for (var i = 0; i < data.length; i++) {
+			let tempo = await tempModel2.findOne({
+				phoneModel: data[i]._id.phoneModel,
+				campaignId: data[i]._id.campaignId
+			});
+			if (tempo) {
+				if (tempo.start) {
+					tempo.start += data[i].start ? data[i].start : 0;
+				} else {
+					tempo.start = data[i].start ? data[i].start : 0;
+				}
+				if (tempo.firstquartile) {
+					tempo.firstquartile += data[i].firstquartile ? data[i].firstquartile : 0;
+				} else {
+					tempo.firstquartile = data[i].firstquartile ? data[i].firstquartile : 0;
+				}
+				if (tempo.midpoint) {
+					tempo.midpoint += data[i].midpoint ? data[i].midpoint : 0;
+				} else {
+					tempo.midpoint = data[i].midpoint ? data[i].midpoint : 0;
+				}
+				if (tempo.thirdquartile) {
+					tempo.thirdquartile += data[i].thirdquartile ? data[i].thirdquartile : 0;
+				} else {
+					tempo.thirdquartile = data[i].thirdquartile ? data[i].thirdquartile : 0;
+				}
+				if (tempo.complete) {
+					tempo.complete += data[i].complete ? data[i].complete : 0;
+				} else {
+					tempo.complete = data[i].complete ? data[i].complete : 0;
+				}
+				if (tempo.impression) {
+					tempo.impression += data[i].impression ? data[i].impression : 0;
+				} else {
+					tempo.impression = data[i].impression ? data[i].impression : 0;
+				}
+				if (tempo.click) {
+					tempo.click += data[i].click
+						? data[i].click
+						: 0 + data[i].companionclicktracking
+							? data[i].companionclicktracking
+							: 0 + data[i].clicktracking ? data[i].clicktracking : 0;
+				} else {
+					tempo.click = data[i].click
+						? data[i].click
+						: 0 + data[i].companionclicktracking
+							? data[i].companionclicktracking
+							: 0 + data[i].clicktracking ? data[i].clicktracking : 0;
+				}
+				tempo
+					.save()
+					.then((ress) => {
+						console.log('Updated', i);
+					})
+					.catch((err) => console.log(err, 'error'));
+			} else {
+				const storer = new tempModel2({
+					phoneModel: data[i]._id.phoneModel,
+					campaignId: data[i]._id.campaignId,
+					firstquartile: data[i].firstquartile ? data[i].firstquartile : 0,
+					thirdquartile: data[i].thirdquartile ? data[i].thirdquartile : 0,
+					midpoint: data[i].midpoint ? data[i].midpoint : 0,
+					start: data[i].start ? data[i].start : 0,
+					impression: data[i].impression ? data[i].impression : 0,
+					click: data[i].click
+						? data[i].click
+						: 0 + data[i].companionclicktracking
+							? data[i].companionclicktracking
+							: 0 + data[i].clicktracking ? data[i].clicktracking : 0,
+					complete: data[i].complete ? data[i].complete : 0
+				});
+				storer
+					.save()
+					.then((result) => {
+						console.log('saved', i);
+					})
+					.catch((err) => {
+						console.log('err', i);
+					});
+			}
+		}
+	} catch (e) {
+		console.log(e);
+		res.status(422).json({ err: e });
+	}
+});
+
 app.listen(port, () => console.log(`app listening on port ${port}!`));
