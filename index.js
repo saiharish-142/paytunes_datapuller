@@ -33,7 +33,7 @@ async function dataGiver() {
 	const csv = new ObjectsToCsv(data);
 	await csv.toDisk('./Data1.csv').then((sol) => console.log('sol')).catch((er) => console.log(er));
 }
-const trackinglogs = mongoose.model('trackinglogs_29jan22');
+const trackinglogs = mongoose.model('trackinglogs');
 const tempModel2 = mongoose.model('tempModel2');
 
 app.get('/sho', (req, res) => {
