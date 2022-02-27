@@ -396,6 +396,18 @@ app.get('/datareturnerTemp2', async (req, res) => {
 					complete: x.complete,
 					click: x.click
 				});
+			} else {
+				data.push({
+					phoneModel: x.phoneModel,
+					cost: null,
+					firstquartile: x.firstquartile,
+					start: x.start,
+					thirdquartile: x.thirdquartile,
+					midpoint: x.midpoint,
+					impression: x.impression,
+					complete: x.complete,
+					click: x.click
+				});
 			}
 		});
 		res.json(data);
