@@ -34,6 +34,7 @@ async function dataGiver() {
 	await csv.toDisk('./Data1.csv').then((sol) => console.log('sol')).catch((er) => console.log(er));
 }
 const trackinglogs = mongoose.model('trackinglogs_29jan22');
+const phonemodel2reports = mongoose.model('phonemodel2reports');
 const tempModel2 = mongoose.model('tempModel2');
 const tempModel3 = mongoose.model('tempModel3');
 
@@ -368,6 +369,39 @@ app.put('/dataPullerDatewiseDiv', async (req, res) => {
 	} catch (e) {
 		console.log(e);
 		res.status(422).json({ err: e });
+	}
+});
+
+app.get('/datareturnerTemp2', async (req, res) => {
+	try {
+		var temp2 = await tempModel2.find();
+		var modelsprice = await phonemodel2reports.find();
+		var modelJson = {};
+		modelsprice.map((x) => {
+			if (x.cost) {
+				modelJson[x.make_model] = x.cost;
+			}
+		});
+		var data = [];
+		temp2.map((x) => {
+			if (x.phoneModel && modelJson[x.phoneModel.toUpperCase()]) {
+				data.push({
+					phoneModel: x.phoneModel,
+					cost: modelJson[x.phoneModel.toUpperCase()],
+					firstquartile: x.firstquartile,
+					start: x.start,
+					thirdquartile: x.thirdquartile,
+					midpoint: x.midpoint,
+					impression: x.impression,
+					complete: x.complete,
+					click: x.click
+				});
+			}
+		});
+		res.json(data);
+	} catch (e) {
+		console.log(e);
+		return res.status(400).json({ error: e });
 	}
 });
 
