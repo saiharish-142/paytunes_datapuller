@@ -374,8 +374,8 @@ app.put('/dataPullerDatewiseDiv', async (req, res) => {
 
 app.get('/datareturnerTemp2', async (req, res) => {
 	try {
-		var temp2 = await tempModel2.find();
-		var modelsprice = await phonemodel2reports.find();
+		var temp2 = await tempModel2.find({ impression: { $gte: 600 } });
+		var modelsprice = await phonemodel2reports.find({ cost: { $exists: true } });
 		var modelJson = {};
 		modelsprice.map((x) => {
 			if (x.cost) {
