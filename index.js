@@ -417,6 +417,47 @@ app.get('/datareturnerTemp2', async (req, res) => {
 	}
 });
 
+app.get('/datareturnerTemp3', async (req, res) => {
+	try {
+		var temp2 = await tempModel3.find({ impression: { $gte: 600 } });
+		var modelsprice = await phonemodel2reports.find({ cost: { $exists: true } });
+		var modelJson = {};
+		modelsprice.map((x) => {
+			if (x.cost) {
+				modelJson[x.make_model] = x.cost;
+			}
+		});
+		var data = [];
+		temp2.map((x) => {
+			if (x.phoneModel && modelJson[x.phoneModel.toUpperCase()]) {
+				data.push({
+					phoneModel: x.phoneModel,
+					phoneMake: x.phoneMake,
+					dayOfWeek:x.dayOfWeek,
+					cost: modelJson[x.phoneModel.toUpperCase()],
+					impression: x.impression,
+					complete: x.complete,
+					click: x.click
+				});
+			} else {
+				data.push({
+					phoneModel: x.phoneModel,
+					phoneMake: x.phoneMake,
+					dayOfWeek:x.dayOfWeek,
+					cost: null,
+					impression: x.impression,
+					complete: x.complete,
+					click: x.click
+				});
+			}
+		});
+		res.json(data);
+	} catch (e) {
+		console.log(e);
+		return res.status(400).json({ error: e });
+	}
+});
+
 app.put('/dataPullerDatewiseDivmix', async (req, res) => {
 	const { startDate, endDate, collectionname } = req.body;
 	if (!collectionname) {
